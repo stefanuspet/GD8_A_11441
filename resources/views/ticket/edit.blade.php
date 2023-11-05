@@ -4,13 +4,13 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Edit Movie</h1>
+                <h1 class="m-0">Edit Ticket</h1>
             </div>
             <!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item">
-                        <a href="#">Movie</a>
+                        <a href="#">Ticket</a>
                     </li>
                     <li class="breadcrumb-item active">Edit</li>
                 </ol>
@@ -29,24 +29,23 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('movie.update', $movie->id)}}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('ticket.update', $ticket->id)}}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="form-row">
-                                <div class="form-group col">
-                                    <label for="formFile" class="form-label">Image</label>
-                                    <input class="form-control @error('image') is-invalid @enderror" type="file" id="formFile" name="image">
-                                    @if (!empty($movie) && $movie->image)
-                                    <p class="text-muted">Current Image: {{ $movie->image }}</p>
-                                    <input type="hidden" name="old_image" value="{{ $movie->image }}">
-                                    @endif
+                                <div class="form-group col-md-6">
+                                    <label class="font-weight-bold">Class</label>
+                                    <input type="text" class="form-control @error('class') is-invalid @enderror" name="class" value="{{ old('class', $ticket->class) }}" placeholder="Masukkan Nama Ticket">
+                                    @error('class')
+                                    <div class="invalid-feedback">x
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
                                 </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label class="font-weight-bold">Title</label>
-                                    <input type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title',$movie->title )}}">
-                                    @error('title')
+                                <div class="form-group col-md-6">
+                                    <label class="font-weight-bold">Price</label>
+                                    <input type="number" class="form-control @error('price') is-invalid @enderror" name="price" value="{{ old('price', $ticket->price) }}" placeholder="Masukkan price">
+                                    @error('price')
                                     <div class="invalid-feedback">x
                                         {{ $message }}
                                     </div>
@@ -54,19 +53,21 @@
                                 </div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label class="font-weight-bold">Director</label>
-                                    <input type="text" class="form-control @error('director') is-invalid @enderror" name="director" value="{{old('director', $movie->director) }}">
-                                    @error('director')
-                                    <div class="invalid-feedback">x
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label class="font-weight-bold">Duration</label>
-                                    <input type="number" class="form-control @error('duration') is-invalid @enderror" name="duration" value="{{old('duration', $movie->duration) }}">
-                                    @error('duration')
+                                <div class="form-group col-md-4">
+                                    <label class="font-weight-bold">Movie</label>
+                                    <select id="deleteDropdown" class="form-control @error('id_movie') is-invalid @enderror" name="id_movie">
+                                        @foreach ($movie as $item)
+                                        <option value="{{ $item->id }}" {{ old('id_movie', $ticket->id_movie) == $item->id ? 'selected' : '' }}>
+                                            {{ $item->title }}
+                                        </option>
+                                        @endforeach
+                                        @foreach ($movie as $item)
+                                        @if (old('id_movie') == $item->id)
+                                        <option value="{{ $item->id}}">{{ $item->title }}</option>
+                                        @endif
+                                        @endforeach
+                                    </select>
+                                    @error('id_movie')
                                     <div class="invalid-feedback">x
                                         {{ $message }}
                                     </div>

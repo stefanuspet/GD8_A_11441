@@ -31,23 +31,34 @@ class MovieController extends Controller
     }
     /**
      * store
-     *
+     *@param mixed $request
      * @param Request $request
      * @return void
      */
     public function store(Request $request)
     {
         //Validasi Formulir
-        $this->validate($request, [
-            'title' => 'required',
-            'director' => 'required',
-            'duration' => 'required'
-        ]);
-        //Fungsi Simpan Data ke dalam Database
+        $this->validate(
+            $request,
+            [
+                'title' => 'required',
+                'director' => 'required',
+                'duration' => 'required',
+                'image' => 'required|image|mimes:jpg,png,jpeg',
+            ],
+            [
+                'image.required' => 'file hanya boleh berupa gambar',
+            ]
+        );
+        $image = $request->file('image');
+        $image->move(public_path('images'), $image->getClientOriginalName());
+        $request->image = $image->getClientOriginalName();
+
         Movie::create([
             'title' => $request->title,
             'director' => $request->director,
-            'duration' => $request->duration
+            'duration' => $request->duration,
+            'image' => $request->image
         ]);
         try {
             return redirect()->route('movie.index');
@@ -77,15 +88,35 @@ class MovieController extends Controller
     {
         $movie = Movie::find($id);
         //validate form
-        $this->validate($request, [
-            'title' => 'required',
-            'director' => 'required',
-            'duration' => 'required'
-        ]);
+        $this->validate(
+            $request,
+            [
+                'title' => 'required',
+                'director' => 'required',
+                'duration' => 'required',
+                'image' => 'image|mimes:jpg,png,jpeg',
+            ],
+            [
+                'image.required' => 'file hanya boleh berupa gambar',
+            ]
+        );
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $image->move(public_path('images'), $image->getClientOriginalName());
+            $request->image = $image->getClientOriginalName();
+            $movie_all = Movie::where('image', $movie->image)->get();
+            if (count($movie_all) == 1) {
+                unlink(public_path('images/' . $movie->image));
+            }
+        } else {
+            $request->image = $request->old_image;
+        }
+        // update data
         $movie->update([
             'title' => $request->title,
             'director' => $request->director,
-            'duration' => $request->duration
+            'duration' => $request->duration,
+            'image' => $request->image
         ]);
         return redirect()->route('movie.index')->with(['success' => 'Data Berhasil Diubah!']);
     }
@@ -99,7 +130,14 @@ class MovieController extends Controller
     public function destroy($id)
     {
         $movie = Movie::find($id);
-        $movie->delete();
+        $movie_all = Movie::where('image', $movie->image)->get();
+        if (count($movie_all) == 1) {
+            unlink(public_path('images/' . $movie->image));
+            $movie->delete();
+        } else {
+            $movie->delete();
+        }
+
         return redirect()->route('movie.index')->with(['success' => 'Data Berhasil Dihapus!']);
     }
 }

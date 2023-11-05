@@ -34,6 +34,7 @@
                             <table class="table table-hover textnowrap">
                                 <thead>
                                     <tr>
+                                        <th class="text-center">Poster</th>
                                         <th class="text-center">Title</th>
                                         <th class="text-center">Director</th>
                                         <th class="text-center">Duration/min</th>
@@ -43,7 +44,10 @@
                                 <tbody>
                                     @forelse ($movie as $item)
                                     <tr>
-                                        <td class="text-center">{{ $item->title }}</td>
+                                        <td class="text-center">
+                                            <img src='{{ asset("images/{$item->image}" ) }}' width="120px" height="150px">
+                                        </td>
+                                        <td class=" text-center">{{ $item->title }}</td>
                                         <td class="text-center">{{ $item->director }}</td>
                                         <td class="text-center">{{ $item->duration}}</td>
                                         <td class="text-center">
